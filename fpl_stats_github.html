@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Data</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Football Data</h1>
+
+  <h2>Home Stats</h2>
+  <table id="home-stats-table">
+    <thead>
+      <tr>
+        <th>Team</th>
+        <th>Scored 2+ Rank</th>
+        <th>Scored None Rank</th>
+        <th>Conceded None Rank</th>
+        <th>Conceded >2 Rank</th>
+        <th>Attacking Score</th>
+        <th>Defensive Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Home stats data will be populated here -->
+    </tbody>
+  </table>
+
+  <h2>Away Stats</h2>
+  <table id="away-stats-table">
+    <thead>
+      <tr>
+        <th>Team</th>
+        <th>Scored 2+ Rank</th>
+        <th>Scored None Rank</th>
+        <th>Conceded None Rank</th>
+        <th>Conceded >2 Rank</th>
+        <th>Attacking Score</th>
+        <th>Defensive Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Away stats data will be populated here -->
+    </tbody>
+  </table>
+
+  <script>
+    // URL of the JSON file in your S3 bucket
+    const jsonUrl = 'https://team-stats-bucket.s3.eu-north-1.amazonaws.com/team_stats.json';
+
+    // Function to populate a table
+    function populateTable(tableId, data) {
+      const tableBody = document.getElementById(tableId).querySelector('tbody');
+      tableBody.innerHTML = ''; // Clear existing data if any
+      data.forEach(team => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${team.team}</td>
+          <td>${team.scored_2_plus_rank}</td>
+          <td>${team.scored_none_rank}</td>
+          <td>${team.conceded_none_rank}</td>
+          <td>${team.conceded_2_or_more_rank}</td>
+          <td>${team.attacking_score}</td>
+          <td>${team.defensive_score}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Fetch and display data
+    fetch(jsonUrl)
+      .then(response => response.json())
+      .then(data => {
+        populateTable('home-stats-table', data.home_stats_table);
+        populateTable('away-stats-table', data.away_stats_table);
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  </script>
+</body>
+</html>
+
